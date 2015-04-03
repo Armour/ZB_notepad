@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>title</title>
+</head>
+
+<body>
+	<div style="position: absolute; top: 50%; left: 50%; margin-top: -300px; margin-left: -500px">
+		<canvas id="canvasOne" width="1000" height="600">
+			Your browser does not support HTML5 Canvas.
+		</canvas>
+	</div>
+
+	<script type="text/javascript">
+		window.addEventListener("load", eventWindowLoaded, false);
+		var Debugger = function() {};
+		Debugger.log = function(message) {
+			try {
+				console.log(message);
+			} catch (exception) {
+				return;
+			}
+		}
+
+		function eventWindowLoaded() {
+			canvasApp();
+		}
+
+		function canvasSupport() {
+			return !!document.createElement('canvas').getContext;
+		}
+
+		function canvasApp() {
+			if (!canvasSupport()) {
+				return;
+			}
+			var theCanvas = document.getElementById("canvasOne");
+			var context = theCanvas.getContext("2d");
+			Debugger.log("Drawing Canvas");
+
+			function drawScreen() {
+				//background
+				context.globalAlpha = 1;
+				context.fillStyle = "#000000";
+				context.fillRect(0, 0, 1000, 600);
+				//image
+				context.globalAlpha = .3;
+				context.drawImage(helloWorldImage, 300, 200);
+				if (fadeIn) {
+					alpha += .01;
+					if (alpha >= 1) {
+						alpha = 1;
+						fadeIn = false;
+					}
+				} else {
+					alpha -= .01;
+					if (alpha < 0) {
+						alpha = 0;
+						fadeIn = true;
+					}
+				}
+				//text
+				context.font = "72px Sans-Serif";
+				context.textBaseline = "top";
+				context.globalAlpha = alpha;
+				context.fillStyle = "#FFFFFF";
+				context.fillText(text, 150, 200);
+			}
+
+			var text = "Hello World";
+			var alpha = 0;
+			var fadeIn = true;
+
+			//image
+			var helloWorldImage = new Image();
+			helloWorldImage.src = "./helloworld.gif";
+
+			function gameLoop() {
+				window.setTimeout(gameLoop, 20);
+				drawScreen()
+			}
+			gameLoop();
+		}
+	</script>
+</body>
+
+</html>
