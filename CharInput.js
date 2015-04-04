@@ -35,7 +35,6 @@
         option=options;
         spell=context.createImageData(16,16);   //for writing the input spelling
         guess=context.createImageData(16,16);   //for writing the output guesses
-
     }
 
     function init() {
@@ -69,7 +68,7 @@
         var ch = [];
         for (i = 0; i < input_cache.length; i++) {
             ch = searchChar(input_cache[i]);
-            //ch = map[0];
+            ch = map[0];
             drawChar(ch, spell);
             context.putImageData(spell, i * 16,0, 0,0,16,16);
         }
@@ -80,13 +79,13 @@
     }
 
     function output_display() {
-        var i;
-        var ch=[];
-        for(i=0; i<output_cache.length; i++) {
-            ch=output_cache[i];   //suppose in output_cache it is a 256 length 0's and 1's
-            drawChar(ch,guess);
-            context.putImageData(guess,i*16,16,0,0,16,16);
-        }
+		var i;
+		var ch=[];
+		for(i=0; i<output_cache.length; i++) {
+			ch=output_cache[i];   //suppose in output_cache it is a 256 length 0's and 1's
+			drawChar(ch,guess);
+			context.putImageData(guess,i*16,16,0,0,16,16);
+		}
     }
 
     function requestOutput() {   //this is an interface for connecting the database
@@ -111,7 +110,6 @@
             }
         }
     }
-
 
     function getbox() {
         return context.getImageData(0,0,option.width, option.height);
