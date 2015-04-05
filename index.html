@@ -17,43 +17,52 @@
 	</div>
 
 	<div style="position: absolute; top: 0; left: 0;">
-		<canvas id="input" width="256" height="256" hidden>
+		<canvas id="input" width="216" height="36" hidden>
 			Your browser does not support HTML5 Canvas.
 		</canvas>
 	</div>
 
 	<script>
 		window.addEventListener("keydown", updateCanvas);
+		var SCREEN_UNIT_WIDTH  = 18; // in which unit now (in width)
+		var SCREEN_UNIT_HEIGHT = 16; // in which unit now (in height)
+		var INPUT_WIDTH        = 216; // input's width
+		var INPUT_HEIGHT       = 36; // input's height
 		var _option = {
-			name: "input",
-			width: "192",
-			height: "36"
+			name   : "input",
+			width  : INPUT_WIDTH,
+			height : INPUT_HEIGHT
 		}
 		var i = 0;
+		var j = 0;
+		var firstTimeInput = true; // mark of first time input
 		var _input = new Input(_option);
 		var _canvas = document.getElementById("canvasOne");
 		var _canvasContext = _canvas.getContext("2d");
-		localStorage.setItem("buffer", JSON.stringify(_canvasContext.getImageData(0, 0, _inputCanvas.width, _inputCanvas.height).data));
+		localStorage.removeItem("buffer");
 
-		function updateCanvas() {
+		function updateCanvas(e) {
+			e.preventDefault();
 			_input.init();
-			var _inputCanvas = _input.getbox();
+			if (firstTimeInput) { // fisrt time input show be judge even if there is no "buffer" in localStorage
+				_input.input_detection(e.keyCode);
+				firstTimeInput = false;
+			}
 			if (typeof localStorage["buffer"] !== "undefined" && localStorage["buffer"] !== "undefined") {
 				var _tmpObject = JSON.parse(localStorage["buffer"]);
-				var _tmpImageData = _canvasContext.getImageData(0, 0, _inputCanvas.width, _inputCanvas.height);
+				var _tmpImageData = _canvasContext.getImageData(0, 0, INPUT_WIDTH, INPUT_HEIGHT);
 				for (var key in _tmpObject)
 					_tmpImageData.data[key] = _tmpObject[key];
-				_canvasContext.putImageData(_tmpImageData, i, i, 0, 0, _inputCanvas.width, _inputCanvas.height);
-				localStorage.removeItem("buffer");
-				i+=3;
-				if (i > 400) i = 0;
+				_canvasContext.putImageData(_tmpImageData, i * SCREEN_UNIT_WIDTH, j * SCREEN_UNIT_HEIGHT, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
+				//localStorage.removeItem("buffer");
+				_input.input_detection(e.keyCode); // i moved preventDefault to this function, so i change the way it pass data, and now in CharInput.js, "key" seems more easy to read.
 			}
-			localStorage.setItem("buffer", JSON.stringify(_canvasContext.getImageData(i, i, _inputCanvas.width, _inputCanvas.height).data));
-			_canvasContext.putImageData(_inputCanvas, i, i, 0, 0, _inputCanvas.width, _inputCanvas.height);
-			setTimeout(updateCanvas, 100);
+			localStorage.setItem("buffer", JSON.stringify(_canvasContext.getImageData(i * SCREEN_UNIT_WIDTH, j * SCREEN_UNIT_HEIGHT, INPUT_WIDTH, INPUT_HEIGHT).data));
+			var _inputCanvas = _input.getbox();
+			var _inputMode = _input.getmode();
+			if (_inputMode) // only in input mode can it display the window, you can comment this line to make it easier when you want to add cursor.
+				_canvasContext.putImageData(_inputCanvas, i * SCREEN_UNIT_WIDTH, j * SCREEN_UNIT_HEIGHT, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
 		}
-
-		updateCanvas();
 	</script>
 </body>
 

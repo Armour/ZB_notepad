@@ -18,14 +18,47 @@
     var spell;
     var guess;
     var mode=0;
-    function input_detection(e) {
-        if(e.keyCode>=65&&e.keyCode<=90) {
-            input_cache[input_cache.length++]= e.keyCode;
-            //output_cache[output_cache.length++]= e.keyCode;
-        }else if(e.keyCode===8) {
-            input_cache.length--;
-        }
+    function input_detection(key) {
+        if(key>=65&&key<=90) {
+            input_cache[input_cache.length++]= key;
+            //output_cache[output_cache.length++]= key;
+        }else if(key===8) {		// delete
+			if (input_cache.length > 0)
+				input_cache.length--;
+			if (!mode) {
+				global.i--;
+				if (global.i < 0) {
+					global.i = 50;
+					global.j--;
+				}
+				if (global.j < 0) {
+					global.i = 0;
+					global.j = 0;
+				}
+			}
+		} else if(key===13) {		// enter
+			input_cache.length = 0;
+			global.i++;
+			if (global.i > 50) {
+				global.i = 0;
+				global.j++;
+			}
+		} else if (key===37) {	// left
+			if (!mode && global.i!=0)
+				global.i--;
+		} else if (key===38) {	// up
+			if (!mode && global.j!=0)
+				global.j--;
+		} else if (key===39) {	// right
+			if (!mode && global.i!=50)
+				global.i++;
+		} else if (key===40 && global.j!=35) {	// down
+			if (!mode)
+				global.j++;
+		}
+        box_detection();
     }
+	Input.prototype.input_detection = input_detection;
 
     var map=[]; //this array is one Chinese character, for testing only
     map[0]=[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -40,8 +73,7 @@
     function init() {
         element.height=option["height"];
         element.width=option["width"];
-        box_detection();
-        window.addEventListener("keydown",input_detection);
+        //window.addEventListener("keydown",input_detection);
         //still need one interface with database
     }
 
