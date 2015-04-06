@@ -17,7 +17,7 @@ app.use(bodyParser());
 app.get("/", function(req, res) {
 	var realpath = __dirname + "/public/main.html";
 	res.sendFile(realpath);
-})
+});
 
 app.get('*.*', function(req, res) {
 	var realpath = __dirname + req.url;
@@ -25,13 +25,13 @@ app.get('*.*', function(req, res) {
 });
 
 app.post("/show", function(req, res) {
-	var queryString = "";
-	queryString = 'SELECT square FROM zbl WHERE py="' + req.body.py + '" ORDER BY code';
-	dbclient.query(queryString, function(err, results, fields) {
-		//console.log(results);
-		res.send(results);
-	});
-})
+  var queryString = "";
+  queryString = 'SELECT square FROM zbl WHERE py="' + req.body.py +'" ORDER BY code';
+  dbclient.query(queryString, function(err, results, fields) {
+    //console.log(results);
+    res.send(results);
+  });
+});
 
 dbclient.connect(function(err, results) {
 	console.log("mysql has started");
