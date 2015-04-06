@@ -1,0 +1,24 @@
+{
+	"name": "ZB_notepad",
+	"version": "1.0.0",
+	"description": ":D",
+	"main": "app.js",
+	"dependencies": {
+		"body-parser": "^1.12.2",
+		"express": "^4.12.3",
+		"mysql": "^2.6.1"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Armour/ZB_notepad.git"
+	},
+	"author": "Group 2418",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Armour/ZB_notepad/issues"
+	},
+	"homepage": "https://github.com/Armour/ZB_notepad"
+}
