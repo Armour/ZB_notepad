@@ -40,4 +40,3 @@
 		drawScreen();
 	}
 })(this);
-

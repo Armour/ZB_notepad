@@ -33,7 +33,7 @@ function posMove(code) { //cope with all the position changes
 
 function setBuffer() {
 	if (firstTimeInput) { // everytime when we press the first letter
-		localStorage.setItem("buffer", JSON.stringify(_canvasContext.getImageData(pos.x, pos.y + INPUT_HEIGHT, INPUT_WIDTH, INPUT_HEIGHT).data));
+		localStorage.setItem("buffer", JSON.stringify(_canvasContext.getImageData(pos.x, pos.y + 16, INPUT_WIDTH, INPUT_HEIGHT).data));
 		firstTimeInput = false;
 	}
 }
@@ -44,24 +44,40 @@ function loadBuffer() {
 		var _tmpImageData = _canvasContext.getImageData(0, 0, INPUT_WIDTH, INPUT_HEIGHT);
 		for (var key in _tmpObject)
 			_tmpImageData.data[key] = _tmpObject[key];
-		_canvasContext.putImageData(_tmpImageData, pos.x, pos.y + INPUT_HEIGHT, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
+		_canvasContext.putImageData(_tmpImageData, pos.x, pos.y + 16, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
 	}
 	firstTimeInput = true;
 }
 
 window.addEventListener("keydown", function(e) { //cope with all the key press down
+	console.log(e.keyCode);
 	e.preventDefault();
 	if (e.keyCode >= 37 && e.keyCode <= 40) { //up down left and right
 		if (_input.getmode() === 0) {
 			posMove(e.keyCode);
+		} else {
+			if (e.keyCode === 37 || e.keyCode === 38) _input.guessScroll(-1);
+			else _input.guessScroll(1);
 		}
-	} else if (e.keyCode == 16) { //shift, change the language mode
+	} else if (e.keyCode === 16) { //shift, change the language mode
+		if (!lang) {
+			loadBuffer();
+			var shiftletter = _canvasContext.createImageData(16, 16);
+			for (var shifta = 0; shifta < _input.input_cache.length; shifta++) {
+				if (pos.x === _canvas.width - 2) posMove(39);
+				if (pos.x === _canvas.width - 2 && pos.y === _canvas.height - 48) break;
+				_input.drawChar(_input.letter[_input.input_cache[shifta] - 65], shiftletter);
+				_canvasContext.putImageData(shiftletter, pos.x + 2, pos.y, 0, 0, 16, 16);
+				posMove(39);
+			}
+			_input.inputClear();
+		}
 		lang = !lang;
-		_input.inputClear();
 	} else if ((e.keyCode >= 65 && e.keyCode <= 90)) { //letters
 		if (!lang) {
 			setBuffer();
 			_input.input_detection(e.keyCode);
+
 		} else { //Eng mode, directly put it on the notepad
 			if (pos.x === _canvas.width - 2) posMove(39);
 			if (pos.x === _canvas.width - 2 && pos.y === _canvas.height - 48);
@@ -85,14 +101,15 @@ window.addEventListener("keydown", function(e) { //cope with all the key press d
 	} else if (e.keyCode === 32) { //blank
 		if (_input.getmode()) {
 			loadBuffer();
-			var confirmChar = _input.confirmChar(1);
+			var confirmChar = _input.confirmChar(0);
+			_input.inputClear();
 			if (pos.x === _canvas.width - 2) posMove(39);
 			if (pos.x === _canvas.width - 2 && pos.y === _canvas.height - 48);
 			else {
 				_canvasContext.putImageData(confirmChar, pos.x + 2, pos.y, 0, 0, 16, 16);
 			}
 			posMove(39);
-			_input.inputClear();
+
 		} else posMove(39);
 	} else if (e.keyCode === 13) { //enter
 		if (!_input.getmode()) {
@@ -115,10 +132,12 @@ window.addEventListener("keydown", function(e) { //cope with all the key press d
 			}
 		} else { //put the letters in the input bar in the notepad
 			loadBuffer();
-			var enterletter = _input.getbox();
+			var enterletter = _canvasContext.createImageData(16, 16);
 			for (var a = 0; a < _input.input_cache.length; a++) {
+				if (pos.x === _canvas.width - 2) posMove(39);
 				if (pos.x === _canvas.width - 2 && pos.y === _canvas.height - 48) break;
-				_canvasContext.putImageData(enterletter, pos.x + 2, pos.y, 0, 0, 16, 16); //这里需要修改～
+				_input.drawChar(_input.letter[_input.input_cache[a] - 65], enterletter);
+				_canvasContext.putImageData(enterletter, pos.x + 2, pos.y, 0, 0, 16, 16);
 				posMove(39);
 			}
 			_input.inputClear();
@@ -134,17 +153,34 @@ window.addEventListener("keydown", function(e) { //cope with all the key press d
 			}
 			posMove(39);
 		} else { //confirm the character
+			loadBuffer();
+			var guesConf = _input.confirmChar(e.keyCode - 48);
+			_input.inputClear();
+			if (guesConf) {
+				if (pos.x === _canvas.width - 2) posMove(39);
+				if (pos.x === _canvas.width - 2 && pos.y === _canvas.height - 48);
+				else {
+					_canvasContext.putImageData(guesConf, pos.x + 2, pos.y, 0, 0, 16, 16);
+				}
+				posMove(39);
+
+			}
 		}
+	} else if (e.keyCode === 189) {
+		_input.guessScroll(-1);
+	} else if (e.keyCode === 187) {
+		_input.guessScroll(1);
 	}
 });
 
 function showBox() {
 	if (_input.getmode()) {
 		_inputCanvas = _input.getbox();
-		_canvasContext.putImageData(_inputCanvas, pos.x, pos.y + INPUT_HEIGHT, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
+		_canvasContext.putImageData(_inputCanvas, pos.x, pos.y + 16, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
+		//_canvasContext.putImageData(_inputCanvas, pos.x, pos.y + INPUT_HEIGHT, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
 		_canvasContext.lineWidth = 1;
 		_canvasContext.strokeStyle = "white";
-		_canvasContext.strokeRect(pos.x + 1, pos.y + INPUT_HEIGHT + 1, INPUT_WIDTH - 2 , INPUT_HEIGHT - 2);
+		_canvasContext.strokeRect(pos.x + 1, pos.y + INPUT_HEIGHT + 1, INPUT_WIDTH - 2, INPUT_HEIGHT - 2);
 	}
 	if (!lang) {
 		_input.drawChar(_input.letter[2], langmode);
