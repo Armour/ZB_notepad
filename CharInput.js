@@ -10,9 +10,8 @@
         !!!NOTE: the texteditor should remember the area which would be covered by the floating window
 */
 
-(function(global) {
+(function(global,jquery) {
     var input_cache=[];
-    Input.prototype.input_cache=input_cache;
     var output_cache=[];
     var element;
     var context;
@@ -20,20 +19,56 @@
     var spell;
     var guess;
     var mode=0;
+    var cur=0;
 
-    function input_detection(code) {
-        if(code>=65&&code<=90) {
-            input_cache[input_cache.length++]= code;
-            //output_cache[output_cache.length++]= code;
-        }else if(code==8) {
-            input_cache.length--;
-            output_cache.length--;
+    function guessScroll(n) {
+        if(n>0&&(cur+1)*10<output_cache.length) {
+            cur++;
         }
+        else if(cur>0)  cur--;
+        output_display();
     }
-    Input.prototype.input_detection=input_detection;
+    Input.prototype.guessScroll=guessScroll;
 
-    //var map=[]; //this array is one Chinese character, for testing only
-    //map[0]=[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    function input_detection(key) {
+        if(key>=65&&key<=90) {
+            cur=0;
+            input_cache[input_cache.length++]= key;
+<<<<<<< HEAD
+            mode=1;
+=======
+            //output_cache[output_cache.length++]= key;
+>>>>>>> e27ec56729def78f832899b7cf6ed882856f512e
+        }else if(key===8) {		// delete
+            cur=0;
+            //console.log(input_cache.length);
+            //console.log(input_cache);
+			input_cache.length--;
+            if(!input_cache.length) box_detection();
+ 			//output_cache.length--;
+		}
+        var sent={};
+        sent.array=input_cache;
+        jquery.post("http://10.189.53.52:2333/show",sent,function(res) {
+            //console.log(sent.array);
+            //console.log(typeof res);
+
+            output_cache.length=0;
+            for(var resI in res) {
+                output_cache[output_cache.length++]=res[resI].square;
+            }
+
+            //var tmpGuess=JSON.parse(res);
+            //console.log(tmpGuess);
+            //for(var GuesKey in tmpGuess) {
+            //    output_cache[GuesKey]=tmpGuess[GuesKey];
+            //}
+            box_detection();
+        });
+    }
+    Input.prototype.input_cache=input_cache;
+	Input.prototype.input_detection = input_detection;
+
     var num=[];
     num[0]="0000000000000000000001111100000000001000001000000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000010000010000000000111110000000000000000000000";
     num[1]="0000000000000000000000010000000000000011000000000000010100000000000000010000000000000001000000000000000100000000000000010000000000000001000000000000000100000000000000010000000000000001000000000000000100000000000000010000000000000111110000000000000000000000";
@@ -46,7 +81,6 @@
     num[8]="0000000000000000000001111100000000001000001000000001000000010000000100000001000000010000000100000000100000100000000001111100000000001000001000000001000000010000000100000001000000010000000100000001000000010000000010000010000000000111110000000000000000000000";
     num[9]="0000000000000000000001111000000000001000010000000001000000100000000100000010000000010000001000000001000000100000000010000110000000000111101000000000000000100000000000000100000000000000010000000000000010000000000000010000000000000110000000000000000000000000";
     Input.prototype.num=num;
-    /*00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*/
     var letter=[];
     letter[0] ="0000000000000000000000000000000000000000000000000000000000000000000000000000000000001111100000000001000001000000000000000100000000001111110000000001000001000000000100000101000000001111101000000000000000000000000000000000000000000000000000000000000000000000";
     letter[1] ="0000000000000000000010000000000000001000000000000000100000000000000010000000000000001011100000000000110001000000000010000010000000001000001000000000100000100000000011000100000000001011100000000000000000000000000000000000000000000000000000000000000000000000";
@@ -82,12 +116,12 @@
         spell=context.createImageData(16,16);   //for writing the input spelling
         guess=context.createImageData(16,16);   //for writing the output guesses
     }
+
     function init() {
         element.height=option["height"];
         element.width=option["width"];
-        context.fillStyle="black";
-        context.fillRect(0,0,element.width,element.height);
-        box_detection();
+        //context.fillStyle="black";
+        //context.fillRect(0,0,element.width,element.height);
         //window.addEventListener("keydown",input_detection);
         //still need one interface with database
     }
@@ -96,18 +130,13 @@
 
     function box_detection() {    //controls the display of the inputbox
         if(!input_cache.length) {
-            //element.height=0;
-            //element.width=0;
             output_cache.length=0;
             mode=0;
         }else {
-            //element.height=option["height"];
-            //element.width=option["width"];
             input_display();
             output_display();
             mode=1;
         }
-        setTimeout(box_detection, 100);
     }
 
     function input_display() {
@@ -117,7 +146,6 @@
         context.fillRect(0,0,element.width, element.height/2);
         for (i = 0; i < input_cache.length; i++) {
             ch = searchChar(input_cache[i]);
-            //ch = num[0];
             drawChar(ch, spell);
             context.putImageData(spell, i * 16,0, 0,0,16,16);
         }
@@ -132,13 +160,16 @@
 		var ch=[];
         context.fillStyle="black";
         context.fillRect(0,16,element.width,element.height/2);
-		for(i=0; i<output_cache.length; i++) {
-            ch=num[i];
-            drawChar(ch, guess);
-            context.putImageData(guess,i*32,16,0,0,16,16);
-			ch=num[i];   //suppose in output_cache it is a 256 length 0's and 1's
-            drawChar(ch,guess);
-			context.putImageData(guess,i*32+16,16,0,0,16,16);
+		for(i=0; i<10; i++) {
+            if(cur*10+i<output_cache.length) {
+                ch=num[i];
+                drawChar(ch, guess);
+                context.putImageData(guess,i*32,16,0,0,16,16);
+                ch=output_cache[cur*10+i];   //suppose in output_cache it is a 256 length 0's and 1's
+                drawChar(ch,guess);
+                context.putImageData(guess,i*32+16,16,0,0,16,16);
+            }
+            else break;
 		}
     }
 
@@ -175,14 +206,27 @@
         return mode;
     }
     Input.prototype.getmode=getmode;
+
     function inputClear() {
-        input_cache.length=0;
+        output_cache.length=0;
+        while(input_cache.length)  input_detection(8);
+
+		mode = 0;
     }
     Input.prototype.inputClear=inputClear;
+<<<<<<< HEAD
     function confirmChar(a) {
-             return context.getImageData(32*a-16,16,16,16);
+        console.log(cur*10+a);
+        console.log(output_cache.length);
+        if((cur*10+a)<output_cache.length) return context.getImageData(32*a+16,16,16,16);
+        else return null;
+=======
+
+	function confirmChar(a) {
+        return context.getImageData(32*a-16,16,16,16);
+>>>>>>> e27ec56729def78f832899b7cf6ed882856f512e
     }
     Input.prototype.confirmChar=confirmChar;
 
     global.Input=Input;
-})(this);
+})(this,jQuery);

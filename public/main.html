@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script type="text/javascript" src="/library/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript">
+		// extract data from form to json
+		$.fn.serializeObject = function() {
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function() {
+				if (o[this.name] !== undefined) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push(this.value || '');
+				} else {
+					o[this.name] = this.value || '';
+				}
+			});
+			return o;
+		};
+	</script>
+	<script type="text/javascript">
+		// handle request
+		$(document).ready(function() {
+			$("button").click(function() {
+				var slt = {};
+				slt.py = "a";
+				alert(JSON.stringify(slt));
+				$.post("/show", slt, function(haha) {
+					alert(haha[0].square);
+				}, "json");
+			});
+		});
+	</script>
+</head>
+
+<body>
+	<button>haha</button>
+</body>
+
+</html>
