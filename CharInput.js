@@ -12,7 +12,6 @@
 
 (function(global) {
     var input_cache=[];
-    Input.prototype.input_cache=input_cache;
     var output_cache=[];
     var element;
     var context;
@@ -20,50 +19,21 @@
     var spell;
     var guess;
     var mode=0;
+
     function input_detection(key) {
         if(key>=65&&key<=90) {
             input_cache[input_cache.length++]= key;
+			console.log(input_cache);
             //output_cache[output_cache.length++]= key;
         }else if(key===8) {		// delete
-			if (input_cache.length > 0)
-				input_cache.length--;
-			if (!mode) {
-				global.i--;
-				if (global.i < 0) {
-					global.i = 50;
-					global.j--;
-				}
-				if (global.j < 0) {
-					global.i = 0;
-					global.j = 0;
-				}
-			}
-		} else if(key===13) {		// enter
-			input_cache.length = 0;
-			global.i++;
-			if (global.i > 50) {
-				global.i = 0;
-				global.j++;
-			}
-		} else if (key===37) {	// left
-			if (!mode && global.i!=0)
-				global.i--;
-		} else if (key===38) {	// up
-			if (!mode && global.j!=0)
-				global.j--;
-		} else if (key===39) {	// right
-			if (!mode && global.i!=50)
-				global.i++;
-		} else if (key===40 && global.j!=35) {	// down
-			if (!mode)
-				global.j++;
+			input_cache.length--;
+			//output_cache.length--;
 		}
         box_detection();
     }
+    Input.prototype.input_cache=input_cache;
 	Input.prototype.input_detection = input_detection;
 
-    //var map=[]; //this array is one Chinese character, for testing only
-    //map[0]=[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     var num=[];
     num[0]="0000000000000000000001111100000000001000001000000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000010000010000000000111110000000000000000000000";
     num[1]="0000000000000000000000010000000000000011000000000000010100000000000000010000000000000001000000000000000100000000000000010000000000000001000000000000000100000000000000010000000000000001000000000000000100000000000000010000000000000111110000000000000000000000";
@@ -116,9 +86,8 @@
     function init() {
         element.height=option["height"];
         element.width=option["width"];
-        context.fillStyle="black";
-        context.fillRect(0,0,element.width,element.height);
-        box_detection();
+        //context.fillStyle="black";
+        //context.fillRect(0,0,element.width,element.height);
         //window.addEventListener("keydown",input_detection);
         //still need one interface with database
     }
@@ -127,18 +96,13 @@
 
     function box_detection() {    //controls the display of the inputbox
         if(!input_cache.length) {
-            //element.height=0;
-            //element.width=0;
             output_cache.length=0;
             mode=0;
         }else {
-            //element.height=option["height"];
-            //element.width=option["width"];
             input_display();
             output_display();
             mode=1;
         }
-        setTimeout(box_detection, 100);
     }
 
     function input_display() {
@@ -208,6 +172,7 @@
     Input.prototype.getmode=getmode;
     function inputClear() {
         input_cache.length=0;
+		mode = 0;
     }
     Input.prototype.inputClear=inputClear;
     function confirmChar(a) {
