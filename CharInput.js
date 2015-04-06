@@ -45,7 +45,7 @@
 		}
         var sent={};
         sent.array=input_cache;
-        jquery.post("http://10.189.53.52:2333/show",sent,function(res) {
+        jquery.post("http://108.61.180.222:2333/show",sent,function(res) {
             //console.log(sent.array);
             //console.log(typeof res);
 

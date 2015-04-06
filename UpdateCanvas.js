@@ -176,11 +176,10 @@ window.addEventListener("keydown", function(e) { //cope with all the key press d
 function showBox() {
 	if (_input.getmode()) {
 		_inputCanvas = _input.getbox();
-		_canvasContext.putImageData(_inputCanvas, pos.x, pos.y + 16, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
-		//_canvasContext.putImageData(_inputCanvas, pos.x, pos.y + INPUT_HEIGHT, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
+		_canvasContext.putImageData(_inputCanvas, pos.x, pos.y + INPUT_HEIGHT/2, 0, 0, INPUT_WIDTH, INPUT_HEIGHT);
 		_canvasContext.lineWidth = 1;
 		_canvasContext.strokeStyle = "white";
-		_canvasContext.strokeRect(pos.x + 1, pos.y + INPUT_HEIGHT + 1, INPUT_WIDTH - 2, INPUT_HEIGHT - 2);
+		_canvasContext.strokeRect(pos.x + 1, pos.y + INPUT_HEIGHT/2 + 1, INPUT_WIDTH - 2, INPUT_HEIGHT - 2);
 	}
 	if (!lang) {
 		_input.drawChar(_input.letter[2], langmode);
