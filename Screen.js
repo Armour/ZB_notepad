@@ -28,7 +28,7 @@
 		}
 		var theCanvas = document.getElementById("canvasOne");
 		var context = theCanvas.getContext("2d");
-		Debugger.log("Drawing Canvas");
+		Debugger.log("Canvas Ready!");
 
 		function drawScreen() {
 			//background

@@ -23,7 +23,6 @@
     function input_detection(key) {
         if(key>=65&&key<=90) {
             input_cache[input_cache.length++]= key;
-			console.log(input_cache);
             //output_cache[output_cache.length++]= key;
         }else if(key===8) {		// delete
 			input_cache.length--;
@@ -170,13 +169,15 @@
         return mode;
     }
     Input.prototype.getmode=getmode;
+
     function inputClear() {
         input_cache.length=0;
 		mode = 0;
     }
     Input.prototype.inputClear=inputClear;
-    function confirmChar(a) {
-             return context.getImageData(32*a-16,16,16,16);
+
+	function confirmChar(a) {
+        return context.getImageData(32*a-16,16,16,16);
     }
     Input.prototype.confirmChar=confirmChar;
 
