@@ -34,7 +34,7 @@
 			//background
 			context.globalAlpha = 1;
 			context.fillStyle = "#000000";
-			context.fillRect(0, 0, 1000, 600);
+			context.fillRect(0, 0, 1082, 608);
 		}
 
 		drawScreen();
