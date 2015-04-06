@@ -6,9 +6,9 @@ var express = require('express');
 var app = express();
 
 dbclient = mysql.createConnection({
-	host: "localhost",
-	user: "root",
-	password: "travel36512",
+	host: "bernarville.mysql.rds.aliyuncs.com",
+	user: "kingston",
+	password: "cjd123456",
 	database: "zblibrary"
 });
 
